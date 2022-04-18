@@ -3,8 +3,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
-  runApp(WebViewApp());
+  runApp(HomeViewApp());
 }
+
+class HomeViewApp extends StatelessWidget {
+  const HomeViewApp({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: WebViewApp(),
+    );
+  }
+}
+
 
 class WebViewApp extends StatefulWidget {
   const WebViewApp({Key key}) : super(key: key);
@@ -24,8 +36,9 @@ class _WebViewAppState extends State<WebViewApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: WebView(
+    return Scaffold(
+      appBar: AppBar(title: Text("小橙家教网"), backgroundColor:  Colors.deepOrange,),
+      body: WebView(
         initialUrl: "https://eduwap.orangemust.com/",
         javascriptMode: JavascriptMode.unrestricted,
         onPageStarted: (String url) {
@@ -37,7 +50,7 @@ class _WebViewAppState extends State<WebViewApp> {
         onWebResourceError: (error) {
           print("${error.description}");
         },
-      ),
+      )
     );
   }
 }
