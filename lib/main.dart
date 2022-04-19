@@ -12,45 +12,52 @@ class HomeViewApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: WebViewApp(),
+      home: WillPopScopeTestRoute(),
     );
   }
 }
 
-
-class WebViewApp extends StatefulWidget {
-  const WebViewApp({Key key}) : super(key: key);
-
+class WillPopScopeTestRoute extends StatefulWidget {
   @override
-  State<WebViewApp> createState() => _WebViewAppState();
+  WillPopScopeTestRouteState createState() {
+    return WillPopScopeTestRouteState();
+  }
 }
 
-class _WebViewAppState extends State<WebViewApp> {
-  @override
-  void initState() {
-    super.initState();
-    // if (Platform.isAndroid) {
-      WebView.platform = SurfaceAndroidWebView();
-    // }
-  }
+class WillPopScopeTestRouteState extends State<WillPopScopeTestRoute> {
+  WebViewController _controller;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("小橙家教网"), backgroundColor:  Colors.deepOrange,),
-      body: WebView(
-        initialUrl: "https://eduwap.orangemust.com/",
-        javascriptMode: JavascriptMode.unrestricted,
-        onPageStarted: (String url) {
-          print("onPageStarted $url");
+    return WillPopScope(
+        onWillPop: () async {
+          var webViewCanGoBack = await _controller.canGoBack();
+          if(webViewCanGoBack) {
+            _controller.goBack();
+            return false;
+          } else {
+            return true;
+          }
         },
-        onPageFinished: (String url) {
-          print("onPageFinished $url");
-        },
-        onWebResourceError: (error) {
-          print("${error.description}");
-        },
-      )
-    );
+        child: new SafeArea(
+          top: true,
+          child: new WebView(
+            onWebViewCreated: (WebViewController webviewController) {
+              _controller = webviewController;
+            },
+            initialUrl: "https://eduwap.orangemust.com/",
+            javascriptMode: JavascriptMode.unrestricted,
+            // JS和Flutter通信的渠道
+            onPageStarted: (String url) {
+              print("onPageStarted $url");
+            },
+            onPageFinished: (String url) {
+              print("onPageFinished $url");
+            },
+            onWebResourceError: (error) {
+              print("${error.description}");
+            },
+          ),
+        ));
   }
 }
